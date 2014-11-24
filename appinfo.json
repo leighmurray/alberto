@@ -1,0 +1,19 @@
+{
+    "appKeys": {},
+    "capabilities": [
+        ""
+    ],
+    "companyName": "leighmurray@gmail.com",
+    "longName": "Percent Yo",
+    "projectType": "native",
+    "resources": {
+        "media": []
+    },
+    "shortName": "Percent Yo",
+    "uuid": "7f6ce90b-85b2-4d55-bc2d-06960de794c8",
+    "versionCode": 1,
+    "versionLabel": "1.0",
+    "watchapp": {
+        "watchface": true
+    }
+}
