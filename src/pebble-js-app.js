@@ -17,22 +17,24 @@ Pebble.addEventListener("showConfiguration",
   }
 );
 
-
 Pebble.addEventListener("webviewclosed",
   function(e) {
-  	var stopStr = "";
+
     //console.log("Configuration window returned: " + e.response);
     if (!e.response) {
       return;
     }
 
     var configuration = JSON.parse(e.response);
-
-    for (var i = 0; i < configuration.length; i++) {
-      var returnedObject = configuration[i];
-	    SetConfig(returnedObject.name, returnedObject.value);
+    console.log(configuration);
+    for (var i = 0; i < configuration.time.length; i++) {
+      var returnedObject = configuration.time[i];
+      
+      for(var k in returnedObject) {
+        SetConfig(k, returnedObject[k]);
+      }
     }
-	SendAll();
+    SendAll();
 
   }
 );
@@ -80,22 +82,23 @@ function SendAppMessage (header, content) {
 		content = content.substr(0, maxLength);
 	}
 	console.log("Sending Header: " + header + " with content: " + content);
-	var transactionId = Pebble.sendAppMessage(
-    	{
-    		"0":header,
-    		"1":content
-    	},
-  		function(e) {
-    		console.log("Successfully delivered message with transactionId=" + e.data.transactionId);
-    	},
-  		function(e) {
-    		console.log("Unable to deliver message with transactionId=" + e.data.transactionId + " Error is: " + e.message);
-  		}
-	);
+	//var transactionId = 
+  Pebble.sendAppMessage(
+    {
+      "0":header,
+      "1":content
+    },
+    function(e) {
+      console.log("Successfully delivered message with transactionId=" + e.data.transactionId);
+    },
+    function(e) {
+      console.log("Unable to deliver message with transactionId=" + e.data.transactionId + " Error is: " + e.message);
+    }
+  );
 }
 
 function GetConfig (key) {
-	return window.localStorage.getItem(key);
+  return window.localStorage.getItem(key);
 }
 
 function SetConfig (key, value) {
