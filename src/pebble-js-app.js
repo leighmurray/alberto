@@ -42,7 +42,6 @@ Pebble.addEventListener("webviewclosed",
         SetConfig(k, returnedObject[k]);
       }
     }
-    SendAll();
 
   }
 );
@@ -59,20 +58,31 @@ function getCurrentEvent () {
           console.log ("no future events yo.");
         }
       } else {
-        console.log('Title:' + json.t);
-        console.log('Start:' + json.s);
-        console.log('End:' + json.e);
-        sendCurrentEvent(json.s, json.e, json.t);
+        //console.log('Title:' + json.t);
+        //console.log('Start:' + json.s);
+        //console.log('End:' + json.e);
+        sendCurrentEvents(json);
       }
     }
   );
 }
 
-function sendCurrentEvent (startDate, endDate, title) {
+function sendCurrentEvents (jsonObject) {
+  
+  var title1 = jsonObject.t0;
+  var startDate1 = jsonObject.s0;
+  var endDate1 = jsonObject.e0;
+  var title2 = jsonObject.t1;
+  var startDate2 = jsonObject.s1;
+  var endDate2 = jsonObject.e1;
+  
   var dictionary = {
-    "KEY_TITLE": title,
-    "KEY_START_TIME": startDate,
-    "KEY_END_TIME": endDate
+    "KEY_TITLE_1": title1,
+    "KEY_START_TIME_1": startDate1,
+    "KEY_END_TIME_1": endDate1,
+    "KEY_TITLE_2": title2,
+    "KEY_START_TIME_2": startDate2,
+    "KEY_END_TIME_2": endDate2,
   };
   
   Pebble.sendAppMessage(dictionary,

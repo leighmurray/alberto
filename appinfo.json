@@ -1,8 +1,11 @@
 {
     "appKeys": {
-        "KEY_END_TIME": 1,
-        "KEY_START_TIME": 0,
-        "KEY_TITLE": 2
+        "KEY_END_TIME_1": 1,
+        "KEY_END_TIME_2": 4,
+        "KEY_START_TIME_1": 0,
+        "KEY_START_TIME_2": 3,
+        "KEY_TITLE_1": 2,
+        "KEY_TITLE_2": 5
     },
     "capabilities": [
         "configurable"
@@ -18,6 +21,6 @@
     "versionCode": 1,
     "versionLabel": "1.0",
     "watchapp": {
-        "watchface": true
+        "watchface": false
     }
 }

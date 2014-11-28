@@ -1,9 +1,12 @@
 #include <pebble.h>
 #include <sys/time.h>
   
-#define KEY_START_TIME 0
-#define KEY_END_TIME 1
-#define KEY_TITLE 2
+#define KEY_START_TIME_1 0
+#define KEY_END_TIME_1 1
+#define KEY_TITLE_1 2
+#define KEY_START_TIME_2 3
+#define KEY_END_TIME_2 4
+#define KEY_TITLE_2 5
   
 static Window *s_main_window;
 static TextLayer *time_layer;
@@ -20,19 +23,6 @@ bool showPercentage = false;
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
   // Use a long-lived buffer
   static char s_uptime_buffer[32];
-  
-  // Get weather update every 30 minutes
-  if(tick_time->tm_sec == 0) {
-    // Begin dictionary
-    DictionaryIterator *iter;
-    app_message_outbox_begin(&iter);
-  
-    // Add a key-value pair
-    dict_write_uint8(iter, 0, 0);
-  
-    // Send the message!
-    app_message_outbox_send();
-  }
   
   if (using_google_time) {
     time_t current_time = time(NULL);
@@ -140,17 +130,17 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
     //APP_LOG(APP_LOG_LEVEL_INFO, "IT'S NOT NULL");
     // Which key was received?
     switch(t->key) {
-      case KEY_TITLE:
+      case KEY_TITLE_1:
         //APP_LOG(APP_LOG_LEVEL_INFO, "Setting Title");
         snprintf(title_buffer, sizeof(title_buffer), "%s", t->value->cstring);
         text_layer_set_text(title_layer, title_buffer);
         break;
-      case KEY_START_TIME:
+      case KEY_START_TIME_1:
           //APP_LOG(APP_LOG_LEVEL_INFO, "Setting Start Time");
           day_start_time = (time_t)t->value->int32;
           //APP_LOG(APP_LOG_LEVEL_INFO, "Set Start Time to: %ld", day_start_time);
           break;
-      case KEY_END_TIME:
+      case KEY_END_TIME_1:
           //APP_LOG(APP_LOG_LEVEL_INFO, "Setting End Time");
           day_end_time = (time_t)t->value->int32;
           //APP_LOG(APP_LOG_LEVEL_INFO, "Set End Time");
@@ -166,12 +156,41 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
   using_google_time = true;
 }
 
+void request_events_update () {
+    // Begin dictionary
+  DictionaryIterator *iter;
+  app_message_outbox_begin(&iter);
+  
+  // Add a key-value pair
+  dict_write_uint8(iter, 0, 0);
+  
+  // Send the message!
+  app_message_outbox_send();
+}
+
+void down_single_click_handler(ClickRecognizerRef recognizer, void *context) {
+  request_events_update();
+}
+
+void config_provider(Window *window) {
+ // single click / repeat-on-hold config:
+  window_single_click_subscribe(BUTTON_ID_SELECT, down_single_click_handler);
+  //window_single_repeating_click_subscribe(BUTTON_ID_SELECT, 1000, select_single_click_handler);
+
+  // multi click config:
+  //window_multi_click_subscribe(BUTTON_ID_SELECT, 2, 10, 0, true, select_multi_click_handler);
+
+  // long click config:
+  //window_long_click_subscribe(BUTTON_ID_SELECT, 700, select_long_click_handler, select_long_click_release_handler);
+}
+
 static void init(void) {
   day_start_time = clock_to_timestamp(TODAY, 8, 30);
   day_end_time = clock_to_timestamp(TODAY, 17, 30);
   
   // Create main Window
   s_main_window = window_create();
+  window_set_fullscreen(s_main_window, true);
   window_set_background_color(s_main_window, GColorBlack);
   window_set_window_handlers(s_main_window, (WindowHandlers) {
     .load = main_window_load,
@@ -179,6 +198,8 @@ static void init(void) {
   });
   window_stack_push(s_main_window, true);
   
+  window_set_click_config_provider(s_main_window, (ClickConfigProvider) config_provider);
+
   // Subscribe to TickTimerService
   tick_timer_service_subscribe(SECOND_UNIT, tick_handler);
   
