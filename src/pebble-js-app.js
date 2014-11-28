@@ -1,20 +1,28 @@
 var configKeys = ["label", "timeStart", "timeEnd", "progress", "format"];
+var eventUrl = 'http://percentage.leighmurray.com/get-event.php';
 
 Pebble.addEventListener("ready",
   function(e) {
-  	//console.log("Yes, it's running!!!");
-	SendAll();
+    getCurrentEvent();
   }
 );
 
 Pebble.addEventListener("showConfiguration",
   function(e) {
-	var url = 'http://percentage.leighmurray.com/settings.htm#';
-	url += GetJSONConfig();
+	var url = 'http://percentage.leighmurray.com/settings.htm';
+	//url += GetJSONConfig();
 	url = encodeURI(url);
 	console.log(url);
 	Pebble.openURL(url);
   }
+);
+
+// Listen for when an AppMessage is received
+Pebble.addEventListener('appmessage',
+  function(e) {
+    console.log("AppMessage received!");
+    getCurrentEvent();
+  }                     
 );
 
 Pebble.addEventListener("webviewclosed",
@@ -39,37 +47,42 @@ Pebble.addEventListener("webviewclosed",
   }
 );
 
-function SendAll () {
-	//SendDateFormat();
-	//SendHourlySignal();
-	//setTimeout(SendBT, 1000);
+function getCurrentEvent () {
+  xhrRequest(eventUrl, 'GET', 
+    function(responseText) {
+      var json = JSON.parse(responseText);
+      
+      if (json.success !== undefined) {
+        if (json.success === false) {
+          console.log ("cant get event, you has to log in.");
+        } else if (json.success === true) {
+          console.log ("no future events yo.");
+        }
+      } else {
+        console.log('Title:' + json.t);
+        console.log('Start:' + json.s);
+        console.log('End:' + json.e);
+        sendCurrentEvent(json.s, json.e, json.t);
+      }
+    }
+  );
 }
 
-function SendDateFormat () {
-	var format = GetConfig("DATE_FORMAT");
-	if (format !== null) {
-		SendAppMessage("set_date_format", Number(format));
-	} else {
-		console.log("no date format found");
-	}
-}
-
-function SendHourlySignal () {
-	var format = GetConfig("SIGNAL");
-	if (format !== null) {
-		SendAppMessage("set_signal", Number(format));
-	} else {
-		console.log("no signal value found");
-	}
-}
-
-function SendBT () {
-	var format = GetConfig("BT");
-	if (format !== null) {
-		SendAppMessage("set_vibrate_on_bt", Number(format));
-	} else {
-		console.log("no bt value found");
-	}
+function sendCurrentEvent (startDate, endDate, title) {
+  var dictionary = {
+    "KEY_TITLE": title,
+    "KEY_START_TIME": startDate,
+    "KEY_END_TIME": endDate
+  };
+  
+  Pebble.sendAppMessage(dictionary,
+  function(e) {
+    console.log("Event info sent to Pebble successfully!");
+  },
+  function(e) {
+    console.log("Error sending event info to Pebble!");
+  }
+);
 }
 
 function SendAppMessage (header, content) {
@@ -96,6 +109,15 @@ function SendAppMessage (header, content) {
     }
   );
 }
+
+var xhrRequest = function (url, type, callback) {
+  var xhr = new XMLHttpRequest();
+  xhr.onload = function () {
+    callback(this.responseText);
+  };
+  xhr.open(type, url);
+  xhr.send();
+};
 
 function GetConfig (key) {
   return window.localStorage.getItem(key);

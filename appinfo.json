@@ -1,5 +1,9 @@
 {
-    "appKeys": {},
+    "appKeys": {
+        "KEY_END_TIME": 1,
+        "KEY_START_TIME": 0,
+        "KEY_TITLE": 2
+    },
     "capabilities": [
         "configurable"
     ],
