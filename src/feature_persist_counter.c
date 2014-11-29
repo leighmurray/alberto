@@ -17,6 +17,7 @@ static double full_day = 86400;
 time_t day_start_time;
 
 time_t day_end_time;
+
 bool using_google_time = false;
 bool showPercentage = false;
 
@@ -25,34 +26,49 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
   static char s_uptime_buffer[32];
   
   if (using_google_time) {
-    time_t current_time = time(NULL);
     
-    double event_progress = difftime(current_time, day_start_time);
-    
-    //APP_LOG(APP_LOG_LEVEL_INFO, "current stamp: %ld - start stamp: %ld - diff: %d", current_time, day_start_time, (int)event_progress);
-    
-    if (event_progress < 0) {// the start time is before the end time. Only possible if we are not within the work day. that is, we should rest.
-      char* rest_text = "Rest";
+    if (difftime(day_start_time, day_end_time) == 0) {
+      char* rest_text = "Now";
       snprintf(s_uptime_buffer, sizeof(rest_text) +  1, "%s", rest_text);
     } else {
-      double event_total_duration = difftime(day_end_time, day_start_time);
-      if (showPercentage) {
-        double percent =  (event_progress / event_total_duration) * 100;
-        snprintf(s_uptime_buffer, sizeof(percent), "%d%%", (int)percent);
-      } else {
-        double remaining_time = event_total_duration - event_progress;
-        int seconds = (int)remaining_time % 60;
-        int minutes = (int)remaining_time / 60 % 60;
-        int hours = (int)remaining_time / 3600;
-        
-        if(hours < 1) {
-		      snprintf(s_uptime_buffer, 6, "%02d:%02d", minutes, seconds);
-      	} else {
-      		snprintf(s_uptime_buffer, 9, "%02d:%02d\n%02d", hours, minutes, seconds);
-      	}
-
-      }
+    
+      time_t current_time = time(NULL);
       
+      double event_progress = difftime(current_time, day_start_time);
+      
+      APP_LOG(APP_LOG_LEVEL_INFO, "current stamp: %ld - start stamp: %ld - diff: %d", current_time, day_start_time, (int)event_progress);
+      
+      if (event_progress < 0) {
+        event_progress *= -1;
+        //char* rest_text = "Rest";
+        //snprintf(s_uptime_buffer, sizeof(rest_text) +  1, "%s", rest_text);
+        int seconds = (int)event_progress % 60;
+        int minutes = (int)event_progress / 60 % 60;
+        int hours = (int)event_progress / 3600;
+        if (hours < 1) {
+          snprintf(s_uptime_buffer, 6, "%02d:%02d", minutes, seconds);
+        } else {
+          snprintf(s_uptime_buffer, 9, "%02d:%02d\n%02d", hours, minutes, seconds);
+        }
+      } else {
+        double event_total_duration = difftime(day_end_time, day_start_time);
+        if (showPercentage) {
+          double percent =  (event_progress / event_total_duration) * 100;
+          snprintf(s_uptime_buffer, sizeof(percent), "%d%%", (int)percent);
+        } else {
+          double remaining_time = event_total_duration - event_progress;
+          int seconds = (int)remaining_time % 60;
+          int minutes = (int)remaining_time / 60 % 60;
+          int hours = (int)remaining_time / 3600;
+          
+          if(hours < 1) {
+  		      snprintf(s_uptime_buffer, 6, "%02d:%02d", minutes, seconds);
+        	} else {
+        		snprintf(s_uptime_buffer, 9, "%02d:%02d\n%02d", hours, minutes, seconds);
+        	}
+  
+        }   
+      }
     }
   } else {
     double work_day_diff = difftime(day_start_time, day_end_time);
@@ -72,8 +88,8 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
       // Update the TextLayer
       snprintf(s_uptime_buffer, sizeof(percent), "%d%%", (int)percent);
     }
-   
   }
+  
   text_layer_set_text(time_layer, s_uptime_buffer);
 }
 

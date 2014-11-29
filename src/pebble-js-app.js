@@ -27,7 +27,7 @@ Pebble.addEventListener('appmessage',
 
 Pebble.addEventListener("webviewclosed",
   function(e) {
-
+    getCurrentEvent();
     //console.log("Configuration window returned: " + e.response);
     if (!e.response) {
       return;
@@ -58,9 +58,9 @@ function getCurrentEvent () {
           console.log ("no future events yo.");
         }
       } else {
-        //console.log('Title:' + json.t);
-        //console.log('Start:' + json.s);
-        //console.log('End:' + json.e);
+        console.log('Title:' + json.t0);
+        console.log('Start:' + json.s0);
+        console.log('End:' + json.e0);
         sendCurrentEvents(json);
       }
     }
