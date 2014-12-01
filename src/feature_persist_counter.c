@@ -19,7 +19,7 @@ time_t day_start_time;
 time_t day_end_time;
 
 bool using_google_time = false;
-bool showPercentage = false;
+bool showPercentage = true;
 
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
   // Use a long-lived buffer
@@ -36,7 +36,7 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
       
       double event_progress = difftime(current_time, day_start_time);
       
-      APP_LOG(APP_LOG_LEVEL_INFO, "current stamp: %ld - start stamp: %ld - diff: %d", current_time, day_start_time, (int)event_progress);
+      //APP_LOG(APP_LOG_LEVEL_INFO, "current stamp: %ld - start stamp: %ld - diff: %d", current_time, day_start_time, (int)event_progress);
       
       if (event_progress < 0) {
         event_progress *= -1;
@@ -48,7 +48,7 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
         if (hours < 1) {
           snprintf(s_uptime_buffer, 6, "%02d:%02d", minutes, seconds);
         } else {
-          snprintf(s_uptime_buffer, 9, "%02d:%02d\n%02d", hours, minutes, seconds);
+          snprintf(s_uptime_buffer, 9, "%02d:%02d:%02d", hours, minutes, seconds);
         }
       } else {
         double event_total_duration = difftime(day_end_time, day_start_time);
@@ -62,9 +62,9 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
           int hours = (int)remaining_time / 3600;
           
           if(hours < 1) {
-  		      snprintf(s_uptime_buffer, 6, "%02d:%02d", minutes, seconds);
+  		      snprintf(s_uptime_buffer, 6, "%02d\n%02d", seconds, minutes);
         	} else {
-        		snprintf(s_uptime_buffer, 9, "%02d:%02d\n%02d", hours, minutes, seconds);
+        		snprintf(s_uptime_buffer, 9, "%02d\n%02d\n%02d", seconds, minutes, hours);
         	}
   
         }   
@@ -98,7 +98,7 @@ static void main_window_load(Window *window) {
   GRect window_bounds = layer_get_bounds(window_layer);
   
   // Create output TextLayer
-  time_layer = text_layer_create(GRect(0, 56, window_bounds.size.w, window_bounds.size.h));
+  time_layer = text_layer_create(GRect(0, 26, window_bounds.size.w, window_bounds.size.h));
   
   text_layer_set_text_alignment(time_layer, GTextAlignmentCenter);
   text_layer_set_background_color(time_layer, GColorClear);
@@ -184,13 +184,21 @@ void request_events_update () {
   app_message_outbox_send();
 }
 
-void down_single_click_handler(ClickRecognizerRef recognizer, void *context) {
+void select_single_click_handler(ClickRecognizerRef recognizer, void *context) {
   request_events_update();
+}
+
+void up_single_click_handler(ClickRecognizerRef recognizer, void *context) {
+  showPercentage = (showPercentage) ? false : true;
 }
 
 void config_provider(Window *window) {
  // single click / repeat-on-hold config:
-  window_single_click_subscribe(BUTTON_ID_SELECT, down_single_click_handler);
+  
+  window_single_click_subscribe(BUTTON_ID_SELECT, select_single_click_handler);
+  
+  window_single_click_subscribe(BUTTON_ID_UP, up_single_click_handler);
+  
   //window_single_repeating_click_subscribe(BUTTON_ID_SELECT, 1000, select_single_click_handler);
 
   // multi click config:

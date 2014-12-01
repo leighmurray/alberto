@@ -95,31 +95,6 @@ function sendCurrentEvents (jsonObject) {
 );
 }
 
-function SendAppMessage (header, content) {
-	// TODO! Make headers/functions into int (use config for names)
-	// so more space available for content
-	var maxLength = 47;
-	maxLength -= header.length;
-	if (content.length > maxLength) {
-		console.log("Warning! SendAppMessage trimming content to " + maxLength + ". Orig length:" + content.length);
-		content = content.substr(0, maxLength);
-	}
-	console.log("Sending Header: " + header + " with content: " + content);
-	//var transactionId = 
-  Pebble.sendAppMessage(
-    {
-      "0":header,
-      "1":content
-    },
-    function(e) {
-      console.log("Successfully delivered message with transactionId=" + e.data.transactionId);
-    },
-    function(e) {
-      console.log("Unable to deliver message with transactionId=" + e.data.transactionId + " Error is: " + e.message);
-    }
-  );
-}
-
 var xhrRequest = function (url, type, callback) {
   var xhr = new XMLHttpRequest();
   xhr.onload = function () {
