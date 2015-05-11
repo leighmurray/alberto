@@ -9,7 +9,7 @@ Pebble.addEventListener("ready",
 
 Pebble.addEventListener("showConfiguration",
   function(e) {
-	var url = 'http://percentage.leighmurray.com/settings.htm';
+	var url = 'http://percentage.leighmurray.com/settings.php';
 	//url += GetJSONConfig();
 	url = encodeURI(url);
 	console.log(url);
