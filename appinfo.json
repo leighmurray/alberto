@@ -1,26 +1,31 @@
 {
-    "appKeys": {
-        "KEY_END_TIME_1": 1,
-        "KEY_END_TIME_2": 4,
-        "KEY_START_TIME_1": 0,
-        "KEY_START_TIME_2": 3,
-        "KEY_TITLE_1": 2,
-        "KEY_TITLE_2": 5
-    },
-    "capabilities": [
-        "configurable"
-    ],
-    "companyName": "leighmurray@gmail.com",
-    "longName": "Percent Yo",
-    "projectType": "native",
-    "resources": {
-        "media": []
-    },
-    "shortName": "Percent Yo",
-    "uuid": "7f6ce90b-85b2-4d55-bc2d-06960de794c8",
-    "versionCode": 1,
-    "versionLabel": "1.0",
-    "watchapp": {
-        "watchface": false
-    }
+  "appKeys": {
+    "KEY_END_TIME_1": 1,
+    "KEY_END_TIME_2": 4,
+    "KEY_START_TIME_1": 0,
+    "KEY_START_TIME_2": 3,
+    "KEY_TITLE_1": 2,
+    "KEY_TITLE_2": 5
+  },
+  "capabilities": [
+    "configurable"
+  ],
+  "companyName": "leighmurray@gmail.com",
+  "longName": "Percent Yo",
+  "projectType": "native",
+  "resources": {
+    "media": []
+  },
+  "shortName": "Percent Yo",
+  "uuid": "7f6ce90b-85b2-4d55-bc2d-06960de794c8",
+  "versionCode": 1,
+  "versionLabel": "1.0",
+  "watchapp": {
+    "watchface": true
+  },
+  "targetPlatforms": [
+    "aplite",
+    "basalt"
+  ],
+  "sdkVersion": "3"
 }

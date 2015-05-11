@@ -21,6 +21,8 @@ time_t day_end_time;
 bool using_google_time = false;
 bool showPercentage = true;
 
+double difftime(time_t time1, time_t time2);
+
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
   // Use a long-lived buffer
   static char s_uptime_buffer[32];
@@ -214,7 +216,6 @@ static void init(void) {
   
   // Create main Window
   s_main_window = window_create();
-  window_set_fullscreen(s_main_window, true);
   window_set_background_color(s_main_window, GColorBlack);
   window_set_window_handlers(s_main_window, (WindowHandlers) {
     .load = main_window_load,
